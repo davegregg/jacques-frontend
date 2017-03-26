@@ -1,6 +1,10 @@
 $(document).ready(function() {
 
-    apiBase = "http://localhost:3000/api"
+    apibase = (window.location.hostname === 'localhost') ? (
+      "http://localhost:3000/api"
+    ) : (
+      "https://deadbeatjacques.herokuapp.com/api"
+    )
 
 
     /*
