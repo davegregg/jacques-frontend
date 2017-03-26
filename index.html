@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Deadbeat Jacques</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" type="text/css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <link rel="stylesheet" href="bootstrap-tagsinput.css" type="text/css" />
+    <link rel="stylesheet" href="global.css" type="text/css" />
+</head>
+
+<body>
+
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">Notemeister 5000</a>
+            </div>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">User <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li class="logged-in"><a href="#">Logout</a></li>
+                        <li class="logged-out"><a href="#" id="login-link" data-toggle="modal" data-target="#login-modal">Login</a></li>
+                        <li class="logged-out"><a href="#" id="signup-link" data-toggle="modal" data-target="#signup-modal">Sign Up</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+
+    <div class="container">
+        <div class="row jumbotron">
+            <div class="col-lg-6 col-lg-offset-3 text-center">
+                <h1>Notemeister 5000</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div id="new-note-row" class="col-lg-6 col-lg-offset-3">
+                <form action="#" id="new_note_form">
+                    <div class="input-group">
+                        <textarea name="body" class="form-control" placeholder="How's your day?"></textarea>
+                        <span class="input-group-btn">
+                            <button class="btn btn-default pull-right" type="submit">Post</button>
+                        </span>
+                    </div>
+                    <input name="tags" type="text" placeholder="Add a tag..." value="" data-role="tagsinput" />
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            <div id="main-content" class="col-lg-6 col-lg-offset-3"></div>
+        </div>
+    </div>
+
+
+    <div id="login-modal-container"></div>
+    <script id="login-modal-body" type="text/x-handlebars-template">
+        <div class="input-group col-lg-12">
+            <input type="text" class="form-control" placeholder="Username" name="username">
+            <input type="password" class="form-control" placeholder="Password" name="password">
+        </div>
+    </script>
+    <script id="login-modal-footer" type="text/x-handlebars-template">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary" data-dismiss="modal">Login</button>
+    </script>
+
+
+    <div id="signup-modal-container"></div>
+    <script id="signup-modal-body" type="text/x-handlebars-template">
+        <div class="input-group col-lg-12">
+            <input type="text" class="form-control" placeholder="Username" name="username">
+            <input type="text" class="form-control" placeholder="Email" name="email">
+            <input type="password" class="form-control" placeholder="Password" name="password">
+        </div>
+    </script>
+    <script id="signup-modal-footer" type="text/x-handlebars-template">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button id="signup" type="submit" class="btn btn-primary" data-dismiss="modal">Sign up</button>
+    </script>
+
+
+    <script id="modal-template" type="text/x-handlebars-template">
+        <div id="{{modal_name}}-modal" class="modal fade" tabindex="-1" role="dialog">
+            <form action="#" id="{{modal_name}}-form">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-body row">
+                            {{modal_body}}
+                        </div>
+                        <div class="modal-footer">
+                            {{modal_footer}}
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </script>
+
+
+    <script id="notes-template" type="text/x-handlebars-template">
+        {{#each notes}}
+        <div class="row panel panel-default">
+            <div class="col-lg-12 panel-body">
+                <div class="row">
+                    <div class="col-lg-6 col-lg-offset-3 panel-body text-center">
+                        <h3>{{title}}</h3>
+                        <p>
+                            {{body}}
+                        </p>
+                    </div>
+                </div>
+                <div class="row tags">
+                  <div class="col-lg-12 text-center">
+                      {{#each tags}}
+                        <span class="tag label label-info">{{name}}</span>
+                      {{/each}}
+                  </div>
+                </div>
+            </div>
+        </div>
+        {{/each}}
+    </script>
+
+
+    <script id="errors-template" type="text/x-handlebars-template">
+        <div class="col-lg-6 col-lg-offset-3 panel panel-default">
+            <article class="panel-body text-right">
+                <div class="row">
+                    <h1 class="bg-danger col-lg-12 text-center text-capitalize">{{textStatus}} {{code.status}} {{message}}</h1>
+                </div>
+            </article>
+        </div>
+    </script>
+
+
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" type="text/javascript"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script src="jquery.timeago.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.6/handlebars.min.js" type="text/javascript"></script>
+    <script src="bootstrap-tagsinput.min.js"></script><!-- http://bootstrap-tagsinput.github.io/bootstrap-tagsinput/examples/ -->
+    <script src="global.js" type="text/javascript"></script>
+
+</body>
+
+</html>

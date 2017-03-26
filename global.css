@@ -1,0 +1,38 @@
+#new-note-row {
+    padding: 0;
+}
+
+#new_note_form {
+    margin-bottom: 4vh;
+}
+
+#new_note_form textarea, #new_note_form button {
+    height: 10vh;
+}
+
+#new_note_form textarea {
+    resize: vertical;
+}
+
+#new_note_form .bootstrap-tagsinput {
+  border: 0;
+  box-shadow: none;
+}
+
+.bootstrap-tagsinput {
+  width: 100%;
+}
+
+#main-content h3 {
+  margin-top: 0;
+}
+
+#main-content p:last-child {
+  margin-bottom: 0;
+}
+
+#main-content .tags {
+  margin-bottom: 15px;
+}
+
+#main-content .tag {}
