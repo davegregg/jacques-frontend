@@ -1,9 +1,21 @@
+//TODO: cleanup, re-order, standardize, & refactor (particularly the modal templates)
+
+/*
+    Handlebars Templates
+                          */
+
+var template = Handlebars.compile($("#notes-template").html())
+var errorsTemplate = Handlebars.compile($("#errors-template").html())
+var modalsTemplate = Handlebars.compile($("#modal-template").html())
+var noteModalTemplate = Handlebars.compile($("#note-modal-template").html())
+
+
 $(document).ready(function() {
 
     apiBase = (window.location.hostname === 'localhost') ? (
-      "http://localhost:3000/api"
+        "http://localhost:3000/api"
     ) : (
-      "https://deadbeatjacques.herokuapp.com/api"
+        "https://deadbeatjacques.herokuapp.com/api"
     )
 
 
@@ -11,16 +23,22 @@ $(document).ready(function() {
         Utilities
                    */
 
-    function set_token(token) {
-        localStorage.setItem('token', token);
+    function set_storage(token, username) {
+        localStorage.setItem('token', token)
+        localStorage.setItem('username', username)
     }
 
     function get_token() {
         return localStorage.getItem('token')
     }
 
+    function get_username() {
+        return localStorage.getItem('username')
+    }
+
     function log_out() {
         localStorage.removeItem('token')
+        localStorage.removeItem('username')
     }
 
     function signed_in() {
@@ -31,24 +49,19 @@ $(document).ready(function() {
         if (signed_in()) {
             $('.logged-out').hide()
             $('.logged-in').show()
+            $('#nav-username').html(`${get_username()} <span class="caret"></span>`)
+            $('#new-note-row').show()
         } else {
             $('.logged-in').hide()
             $('.logged-out').show()
+            $('#nav-username').html('User <span class="caret"></span>')
+            $('#new-note-row').hide()
         }
     }
 
     function reset_form(form_id) {
         $(form_id)[0].reset()
     }
-
-
-    /*
-        Handlebars Templates
-                              */
-
-    var template = Handlebars.compile($("#notes-template").html())
-    var errorsTemplate = Handlebars.compile($("#errors-template").html())
-    var modalsTemplate = Handlebars.compile($("#modal-template").html())
 
 
     /*
@@ -60,10 +73,13 @@ $(document).ready(function() {
             data_type: 'json'
         })
         .done((response) => {
-            $("#main-content").append(
-              template(response)
+            $('#main-content').append(
+                template(response)
             )
-            $("#main-content").find('.note-tags').tagsinput()
+            $('#new-note-tags').tagsinput({
+              trimValue: true,
+              maxChars: 40
+            })
         })
         .fail((status, textStatus, xhr) => {
             error = {
@@ -71,53 +87,36 @@ $(document).ready(function() {
                 textStatus: textStatus,
                 message: xhr
             }
-            $("#main-content").html(errors_template(error))
+            $('#main-content').html(errorsTemplate(error))
         })
 
 
+    /*
+        New Note Form
+                       */
+
     $('#new_note_form').on('submit', (ev) => {
         ev.preventDefault()
-        $.post(apiBase + '/notes?token=' + get_token(), $(this).serialize())
-            .done((note) => {
-                $('#note_list').prepend(
-                    note_display(note)
+        $.post(`${apiBase}/notes?api_token=${get_token()}`, $('#new_note_form').serialize())
+            .done((response) => {
+                response.notes = [response.note]
+                delete response.note
+                $('#main-content').prepend(
+                    template(response)
                 )
-                reset_form('#post_note')
+                reset_form('#new_note_form')
+                $('#new-note-tags').tagsinput('removeAll')
             })
     })
 
 
 
-    $('#logout').on('click', (ev) => {
+    $('#logout-link').on('click', (ev) => {
         ev.preventDefault()
         log_out()
         toggle_sign_in()
     })
 
-    function bindLoginSubmissionEvent() {
-        $('#login-form').on('submit', (ev) => {
-            ev.preventDefault()
-            alert("We've caught the login form submission and are about to post!")
-            $.post(apiBase + "/login", $(this).serialize())
-                .done((response) => {
-                    set_token(response.token)
-                    reset_form('#login')
-                    toggle_sign_in()
-                })
-        })
-    }
-
-    function bindSignupSubmissionEvent() {
-        $('#signup-form').on('submit', function(ev) {
-            ev.preventDefault()
-            alert("We've caught a signup submission event!")
-            $.post(apiBase + "/users", $(this).serialize())
-                .done((response) => {
-                    set_token(response.token)
-                    toggle_sign_in()
-                })
-        })
-    }
 
 
     /*
@@ -133,13 +132,93 @@ $(document).ready(function() {
         $(`#${name}-link`).on('shown.bs.modal', () => { // modal trigger
             $(`#${name}-modal`).focus()
         })
-        if(typeof bindModalFormSubmission !== 'undefined'){ // if arg supplied
-          bindModalFormSubmission()
+        if (typeof bindModalFormSubmission !== 'undefined') { // if arg supplied
+            bindModalFormSubmission()
         }
+    }
+
+    function bindLoginSubmissionEvent() {
+        $('#login-form').on('submit', (ev) => {
+            ev.preventDefault()
+            $.post(apiBase + "/login", $('#login-form').serialize())
+                .done((response) => {
+                    if (typeof response.error === 'string') {
+                        error = {
+                            code: {
+                                status: response.status
+                            },
+                            textStatus: 'Unauthorized',
+                            message: response.error
+                        }
+                        $('#main-content').html(errorsTemplate(error))
+                    } else {
+                        set_storage(response.user.api_token, response.user.username)
+                        toggle_sign_in()
+                    }
+                    reset_form('#login-form')
+                })
+                .fail((status, textStatus, xhr) => {
+                    error = {
+                        code: status,
+                        textStatus: textStatus,
+                        message: xhr
+                    }
+                    $('#main-content').html(errorsTemplate(error))
+                })
+            $('#login-modal').modal('hide')
+        })
+    }
+
+    function bindSignupSubmissionEvent() {
+        $('#signup-form').on('submit', (ev) => {
+            ev.preventDefault()
+            $.post(apiBase + '/users', $('#signup-form').serialize())
+                .done(function(response) {
+                    set_storage(response.user.api_token, response.user.username)
+                    toggle_sign_in()
+                })
+                .fail((status, textStatus, xhr) => {
+                    error = {
+                        code: status,
+                        textStatus: textStatus,
+                        message: xhr
+                    }
+                    $('#main-content').html(errorsTemplate(error))
+                })
+            $('#signup-modal').modal('hide')
+        })
     }
 
     buildModal('login', bindLoginSubmissionEvent)
     buildModal('signup', bindSignupSubmissionEvent)
 
     toggle_sign_in()
+
+})
+
+function showTag(anchor) {
+    tag = $(anchor).html()
+
+    $.get(`${apiBase}/notes/tag/${tag}`)
+        .done((response) => {
+            $('#main-content').html(
+                template(response.tag)
+            )
+        })
+}
+
+$(function(){
+
+  $(window).on('hashchange', (ev)=> {
+      ev.preventDefault()
+      noteID = location.hash.substring(1)
+      $.get(`${apiBase}/notes/${noteID}`)
+          .done((response)=> {
+              $('#note-modal-container').html(
+                noteModalTemplate(response.note)
+              )
+              $('#note-modal').modal('show')
+          })
+  })
+
 })

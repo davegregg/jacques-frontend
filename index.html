@@ -28,9 +28,9 @@
             </div>
             <ul class="nav navbar-nav navbar-right">
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">User <span class="caret"></span></a>
+                    <a href="#" id="nav-username" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">User <span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li class="logged-in"><a href="#">Logout</a></li>
+                        <li class="logged-in"><a href="#" id="logout-link">Logout</a></li>
                         <li class="logged-out"><a href="#" id="login-link" data-toggle="modal" data-target="#login-modal">Login</a></li>
                         <li class="logged-out"><a href="#" id="signup-link" data-toggle="modal" data-target="#signup-modal">Sign Up</a></li>
                     </ul>
@@ -46,16 +46,17 @@
                 <h1>Notemeister 5000</h1>
             </div>
         </div>
-        <div class="row">
-            <div id="new-note-row" class="col-lg-6 col-lg-offset-3">
+        <div id="new-note-row" class="row">
+            <div id="new-note-col" class="col-lg-6 col-lg-offset-3">
                 <form action="#" id="new_note_form">
+                    <input id="new-note-title" class="form-control" name="title" type="text" placeholder="Add a title..." value="" />
                     <div class="input-group">
                         <textarea name="body" class="form-control" placeholder="How's your day?"></textarea>
                         <span class="input-group-btn">
                             <button class="btn btn-default pull-right" type="submit">Post</button>
                         </span>
                     </div>
-                    <input name="tags" type="text" placeholder="Add a tag..." value="" data-role="tagsinput" />
+                    <input id="new-note-tags" name="tags" type="text" placeholder="Add a tag..." value="" data-role="tagsinput" />
                 </form>
             </div>
         </div>
@@ -74,7 +75,7 @@
     </script>
     <script id="login-modal-footer" type="text/x-handlebars-template">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="submit" class="btn btn-primary" data-dismiss="modal">Login</button>
+        <button type="submit" class="btn btn-primary">Login</button>
     </script>
 
 
@@ -88,7 +89,7 @@
     </script>
     <script id="signup-modal-footer" type="text/x-handlebars-template">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button id="signup" type="submit" class="btn btn-primary" data-dismiss="modal">Sign up</button>
+        <button id="signup" type="submit" class="btn btn-primary">Sign up</button>
     </script>
 
 
@@ -109,6 +110,35 @@
         </div>
     </script>
 
+    <div id="note-modal-container"></div>
+    <script id="note-modal-template" type="text/x-handlebars-template">
+        <div id="note-modal" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-body row">
+                      <div class="col-lg-12 panel-body">
+                          <div class="row">
+                              <div class="col-lg-6 col-lg-offset-3 panel-body text-center">
+                                  <h3>{{title}}</h3>
+                                  <p>
+                                      {{body}}
+                                  </p>
+                              </div>
+                          </div>
+                          <div class="row tags">
+                            <div class="col-lg-12 text-center">
+                                {{#each tags}}
+                                  <a class="tag label label-info" href="#" onclick="showTag(this); return false;">{{name}}</a>
+                                {{/each}}
+                            </div>
+                          </div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+
 
     <script id="notes-template" type="text/x-handlebars-template">
         {{#each notes}}
@@ -125,7 +155,7 @@
                 <div class="row tags">
                   <div class="col-lg-12 text-center">
                       {{#each tags}}
-                        <span class="tag label label-info">{{name}}</span>
+                        <a class="tag label label-info" href="#" onclick="showTag(this); return false;">{{name}}</a>
                       {{/each}}
                   </div>
                 </div>

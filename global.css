@@ -1,4 +1,8 @@
 #new-note-row {
+  display: none;
+}
+
+#new-note-col {
     padding: 0;
 }
 
@@ -14,25 +18,44 @@
     resize: vertical;
 }
 
-#new_note_form .bootstrap-tagsinput {
-  border: 0;
-  box-shadow: none;
+#new_note_form #new-note-title {
+    width: 100%;
+    border: 0;
+    box-shadow: none;
 }
 
-.bootstrap-tagsinput {
-  width: 100%;
+#new_note_form #new-note-title:focus {
+    border-top: dashed 1px grey;
+}
+
+#new_note_form .bootstrap-tagsinput {
+    border: 0;
+    box-shadow: none;
+}
+
+.bootstrap-tagsinput, .bootstrap-tagsinput input {
+    width: 100%;
+    text-align: center;
+}
+
+.bootstrap-tagsinput input:focus {
+    border-bottom: dashed 1px grey;
 }
 
 #main-content h3 {
-  margin-top: 0;
+    margin-top: 0;
 }
 
 #main-content p:last-child {
-  margin-bottom: 0;
+    margin-bottom: 0;
 }
 
 #main-content .tags {
-  margin-bottom: 15px;
+    margin-bottom: 15px;
 }
 
 #main-content .tag {}
+
+#note-modal .panel-body{
+  padding-top: 0;
+}
