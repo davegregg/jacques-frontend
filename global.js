@@ -1,5 +1,7 @@
 //TODO: cleanup, re-order, standardize, & refactor (particularly the modal templates)
 
+var siteTitle = 'Notemeister 5000'
+
 /*
     Handlebars Templates
                           */
@@ -198,7 +200,7 @@ $(document).ready(function() {
 
 function showTag(anchor) {
     tag = $(anchor).html()
-
+    $('#banner-heading').html(`${siteTitle}: <span class="text-capitalize">${tag}</span>`)
     $.get(`${apiBase}/notes/tag/${tag}`)
         .done((response) => {
             $('#main-content').html(
